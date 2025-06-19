@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  laravel:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: tripsync-backend-image
+    container_name: tripsync-backend
+    ports:
+      - "8080:80"  # Laravel accessible at localhost:8080
+    volumes:
+      - ./server:/var/www/html
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: tripsyncDb
+      DB_USERNAME: sail
+      DB_PASSWORD: password
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  # MySQL for Laravel
+  mysql:
+    image: mysql:8.0
+    container_name: tripsync-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tripsyncDb
+      MYSQL_USER: sail
+      MYSQL_PASSWORD: password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  nextjs:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: tripsync-frontend-image
+    container_name: tripsync-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080/api
+    working_dir: /app
+    command: npm run dev
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge
