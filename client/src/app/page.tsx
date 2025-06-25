@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { buildApiUrl, API_CONFIG } from "@/lib/config";
 
 interface ApiResponse {
-  status: string;
-  timestamp: string;
+  message: string;
 }
 
 export default function Home() {
@@ -16,7 +16,7 @@ export default function Home() {
     // Test the Laravel API connection
     const testApi = async () => {
       try {
-        const response = await fetch('https://tripsync-production-7674.up.railway.app/health', {
+        const response = await fetch(buildApiUrl(API_CONFIG.endpoints.test), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -59,8 +59,7 @@ export default function Home() {
           <p className="text-blue-800 dark:text-blue-200 mb-2">{apiStatus}</p>
           {apiData && (
             <div className="text-sm text-blue-700 dark:text-blue-300">
-              <p>Status: {apiData.status}</p>
-              <p>Timestamp: {apiData.timestamp}</p>
+              <p>Message: {apiData.message}</p>
             </div>
           )}
         </div>

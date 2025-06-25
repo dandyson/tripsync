@@ -13,11 +13,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api([
-            \App\Http\Middleware\Cors::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
         $middleware->web([
-            \App\Http\Middleware\Cors::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

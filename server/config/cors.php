@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:3000',
-        'https://tripsync-git-main-dandysons-projects.vercel.app/',  // Your production Next.js domain
+        'https://tripsync-git-main-dandysons-projects.vercel.app',
     ],
 
     'allowed_origins_patterns' => [],
