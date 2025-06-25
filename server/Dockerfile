@@ -31,7 +31,11 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Install Node.js dependencies and build assets
-RUN npm install && npm run build
+RUN npm install
+RUN npm run build
+
+# Verify assets were built
+RUN ls -la public/build/
 
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
