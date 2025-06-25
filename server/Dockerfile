@@ -24,19 +24,14 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files and artisan first for better caching
-COPY composer.json composer.lock artisan ./
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy package files
-COPY package.json package-lock.json ./
-RUN npm install
-
-# Copy the rest of the application
+# Copy the entire application
 COPY . .
 
-# Build assets
-RUN npm run build
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Install Node.js dependencies and build assets
+RUN npm install && npm run build
 
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
