@@ -1,6 +1,39 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export default function Home() {
+  const [apiStatus, setApiStatus] = useState<string>("Testing API connection...");
+  const [apiData, setApiData] = useState<any>(null);
+
+  useEffect(() => {
+    // Test the Laravel API connection
+    const testApi = async () => {
+      try {
+        const response = await fetch('https://tripsync-production-7674.up.railway.app/health', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setApiStatus("✅ API Connected Successfully!");
+          setApiData(data);
+        } else {
+          setApiStatus("❌ API Connection Failed");
+        }
+      } catch (error) {
+        setApiStatus("❌ API Connection Error");
+        console.error('API Error:', error);
+      }
+    };
+
+    testApi();
+  }, []);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -12,6 +45,21 @@ export default function Home() {
           height={38}
           priority
         />
+
+        {/* API Status Display */}
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+          <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">
+            Laravel API Status
+          </h2>
+          <p className="text-blue-800 dark:text-blue-200 mb-2">{apiStatus}</p>
+          {apiData && (
+            <div className="text-sm text-blue-700 dark:text-blue-300">
+              <p>Status: {apiData.status}</p>
+              <p>Timestamp: {apiData.timestamp}</p>
+            </div>
+          )}
+        </div>
+
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
             Get started by editing{" "}
