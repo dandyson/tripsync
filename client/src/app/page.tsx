@@ -3,9 +3,14 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
+interface ApiResponse {
+  status: string;
+  timestamp: string;
+}
+
 export default function Home() {
   const [apiStatus, setApiStatus] = useState<string>("Testing API connection...");
-  const [apiData, setApiData] = useState<any>(null);
+  const [apiData, setApiData] = useState<ApiResponse | null>(null);
 
   useEffect(() => {
     // Test the Laravel API connection
@@ -19,7 +24,7 @@ export default function Home() {
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const data: ApiResponse = await response.json();
           setApiStatus("✅ API Connected Successfully!");
           setApiData(data);
         } else {
