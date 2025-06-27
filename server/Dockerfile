@@ -43,9 +43,5 @@ RUN chmod -R 775 storage bootstrap/cache
 # Expose port (Railway will override this)
 EXPOSE 8080
 
-# Run build script to migrate database
-RUN chmod +x build.sh
-RUN ./build.sh
-
 # Start the application using Railway's PORT
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
