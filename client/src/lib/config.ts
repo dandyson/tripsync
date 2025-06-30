@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://tripsync-production-7674.up.railway.app',
+  baseUrl: process.env.NEXT_PUBLIC_API_URL,
   endpoints: {
     test: '/api/test',
     health: '/health',
