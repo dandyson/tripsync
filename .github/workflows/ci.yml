@@ -28,13 +28,13 @@ jobs:
           extensions: pdo, pdo_mysql
       - name: Install dependencies
         run: |
-          cd backend
+          cd server
           composer install
           cp .env.example .env
           php artisan key:generate
       - name: Run tests
         run: |
-          cd backend
+          cd server
           php artisan migrate --env=testing --force
           php artisan test
 
