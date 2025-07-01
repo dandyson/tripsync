@@ -49,10 +49,10 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: |
-          cd frontend
+          cd client
           npm ci
       - name: Lint and Type Check
         run: |
-          cd frontend
+          cd client
           npm run lint
           npm run type-check
