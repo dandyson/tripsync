@@ -78,8 +78,7 @@ jobs:
 
       - name: Run Duster Lint
         working-directory: ./server
-        with:
-          args: lint
+        run: ./vendor/bin/duster lint
 
   frontend:
     name: Frontend Lint & Type Check
