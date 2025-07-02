@@ -78,7 +78,6 @@ jobs:
 
       - name: Run Duster Lint
         working-directory: ./server
-        uses: tighten/duster-action@v2
         with:
           args: lint
 
