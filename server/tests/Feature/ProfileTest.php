@@ -1,30 +1,54 @@
 <?php
 
 use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
-test('profile page is displayed', function () {
+test('profile information is returned', function () {
     $user = User::factory()->create();
+    Sanctum::actingAs($user);
 
     $response = $this
-        ->actingAs($user)
-        ->get('/profile');
+        ->get('/api/profile');
 
-    $response->assertOk();
+    $response->assertOk()
+        ->assertJsonStructure([
+            'user' => [
+                'id',
+                'name',
+                'email',
+                'email_verified_at',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
 });
 
 test('profile information can be updated', function () {
     $user = User::factory()->create();
+    Sanctum::actingAs($user);
 
     $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
+        ->patch('/api/profile', [
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
     $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        ->assertOk()
+        ->assertJson([
+            'message' => 'Profile updated successfully'
+        ])
+        ->assertJsonStructure([
+            'message',
+            'user' => [
+                'id',
+                'name',
+                'email',
+                'email_verified_at',
+                'created_at',
+                'updated_at'
+            ]
+        ]);
 
     $user->refresh();
 
@@ -35,51 +59,53 @@ test('profile information can be updated', function () {
 
 test('email verification status is unchanged when the email address is unchanged', function () {
     $user = User::factory()->create();
+    Sanctum::actingAs($user);
 
     $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
+        ->patch('/api/profile', [
             'name' => 'Test User',
             'email' => $user->email,
         ]);
 
     $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        ->assertOk()
+        ->assertJson([
+            'message' => 'Profile updated successfully'
+        ]);
 
     $this->assertNotNull($user->refresh()->email_verified_at);
 });
 
 test('user can delete their account', function () {
     $user = User::factory()->create();
+    Sanctum::actingAs($user);
 
     $response = $this
-        ->actingAs($user)
-        ->delete('/profile', [
+        ->delete('/api/profile', [
             'password' => 'password',
         ]);
 
     $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/');
+        ->assertOk()
+        ->assertJson([
+            'message' => 'Account deleted successfully'
+        ]);
 
-    $this->assertGuest();
     $this->assertNull($user->fresh());
 });
 
 test('correct password must be provided to delete account', function () {
     $user = User::factory()->create();
+    Sanctum::actingAs($user);
 
     $response = $this
-        ->actingAs($user)
-        ->from('/profile')
-        ->delete('/profile', [
+        ->withHeaders(['Accept' => 'application/json'])
+        ->delete('/api/profile', [
             'password' => 'wrong-password',
         ]);
 
-    $response
-        ->assertSessionHasErrorsIn('userDeletion', 'password')
-        ->assertRedirect('/profile');
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['password']);
 
     $this->assertNotNull($user->fresh());
 });

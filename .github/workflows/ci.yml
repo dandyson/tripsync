@@ -1,0 +1,102 @@
+# .github/workflows/ci.yml
+name: CI – Lint & Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: server/vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('server/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql, pdo_sqlite, sqlite3, bcmath, soap, intl, gd, exif, iconv
+
+      - name: Install Dependencies
+        working-directory: ./server
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Setup Environment
+        working-directory: ./server
+        run: |
+          cp .env.example .env
+          echo "APP_KEY=base64:$(openssl rand -base64 32)" >> .env
+          echo "DB_CONNECTION=sqlite" >> .env
+          echo "DB_DATABASE=:memory:" >> .env
+
+      - name: Generate Key
+        working-directory: ./server
+        run: php artisan key:generate
+
+      - name: Clear Laravel caches
+        working-directory: ./server
+        run: |
+          php artisan cache:clear
+          php artisan config:clear
+          php artisan route:clear
+          php artisan view:clear
+
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        working-directory: ./server
+        run: vendor/bin/phpunit --verbose
+
+      - name: Run Pest Tests
+        working-directory: ./server
+        run: ./vendor/bin/pest
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, pdo_mysql, pdo_sqlite, sqlite3, bcmath, soap, intl, gd, exif, iconv
+
+      - name: Install Composer Dependencies
+        working-directory: ./server
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Run Duster Lint
+        working-directory: ./server
+        uses: tighten/duster-action@v2
+        with:
+          args: lint
+
+  frontend:
+    name: Frontend Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: |
+          cd client
+          npm ci
+      - name: Lint and Type Check
+        run: |
+          cd client
+          npm run lint
+          npm run type-check
