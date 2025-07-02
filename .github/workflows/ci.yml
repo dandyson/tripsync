@@ -38,6 +38,7 @@ jobs:
           echo "APP_KEY=base64:$(openssl rand -base64 32)" >> .env
           echo "DB_CONNECTION=sqlite" >> .env
           echo "DB_DATABASE=:memory:" >> .env
+          echo "CACHE_STORE=array" >> .env
 
       - name: Generate Key
         working-directory: ./server
@@ -53,7 +54,7 @@ jobs:
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./server
-        run: vendor/bin/phpunit --verbose
+        run: vendor/bin/pest
 
       - name: Run Pest Tests
         working-directory: ./server
@@ -76,11 +77,9 @@ jobs:
         working-directory: ./server
         run: composer install --prefer-dist --no-interaction
 
-      - name: Run Duster Lint
+      - name: Run Laravel Pint
         working-directory: ./server
-        uses: tighten/duster-action@v2
-        with:
-          args: lint
+        run: ./vendor/bin/pint
 
   frontend:
     name: Frontend Lint & Type Check

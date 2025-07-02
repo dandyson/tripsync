@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,13 +61,13 @@ Route::get('/db-test', function () {
             'status' => 'success',
             'message' => 'Database connected successfully',
             'database' => $dbName,
-            'timestamp' => now()
+            'timestamp' => now(),
         ]);
     } catch (\Exception $e) {
         return response()->json([
             'status' => 'error',
             'message' => 'Database connection failed',
-            'error' => $e->getMessage()
+            'error' => $e->getMessage(),
         ], 500);
     }
 });
@@ -78,6 +78,7 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/data', function (Request $request) {
     $data = $request->all();
+
     return response()->json(['received' => $data]);
 });
 

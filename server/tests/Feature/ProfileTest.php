@@ -18,8 +18,8 @@ test('profile information is returned', function () {
                 'email',
                 'email_verified_at',
                 'created_at',
-                'updated_at'
-            ]
+                'updated_at',
+            ],
         ]);
 });
 
@@ -36,7 +36,7 @@ test('profile information can be updated', function () {
     $response
         ->assertOk()
         ->assertJson([
-            'message' => 'Profile updated successfully'
+            'message' => 'Profile updated successfully',
         ])
         ->assertJsonStructure([
             'message',
@@ -46,8 +46,8 @@ test('profile information can be updated', function () {
                 'email',
                 'email_verified_at',
                 'created_at',
-                'updated_at'
-            ]
+                'updated_at',
+            ],
         ]);
 
     $user->refresh();
@@ -70,7 +70,7 @@ test('email verification status is unchanged when the email address is unchanged
     $response
         ->assertOk()
         ->assertJson([
-            'message' => 'Profile updated successfully'
+            'message' => 'Profile updated successfully',
         ]);
 
     $this->assertNotNull($user->refresh()->email_verified_at);
@@ -88,7 +88,7 @@ test('user can delete their account', function () {
     $response
         ->assertOk()
         ->assertJson([
-            'message' => 'Account deleted successfully'
+            'message' => 'Account deleted successfully',
         ]);
 
     $this->assertNull($user->fresh());
