@@ -54,7 +54,7 @@ jobs:
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         working-directory: ./server
-        run: vendor/bin/phpunit
+        run: vendor/bin/pest
 
       - name: Run Pest Tests
         working-directory: ./server
