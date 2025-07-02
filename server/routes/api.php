@@ -80,3 +80,10 @@ Route::post('/data', function (Request $request) {
     $data = $request->all();
     return response()->json(['received' => $data]);
 });
+
+// Profile API routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+});
