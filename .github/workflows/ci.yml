@@ -77,9 +77,9 @@ jobs:
         working-directory: ./server
         run: composer install --prefer-dist --no-interaction
 
-      - name: Run Duster Lint
+      - name: Run Laravel Pint
         working-directory: ./server
-        run: ./vendor/bin/duster lint
+        run: ./vendor/bin/pint
 
   frontend:
     name: Frontend Lint & Type Check
